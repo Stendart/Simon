@@ -1,6 +1,6 @@
 <template>
     <div class="square " :aria-disabled="true"
-         :class="{'square-active': eventClick(), 'no-hover': isCantHover}"
+         :class="{'square-active': eventClick(), 'no-hover': isCantActive}"
          :style="{backgroundColor: color, transform: 'rotate(' + rotation + 'deg)'}"
          @click="clickHandler"
     >
@@ -18,7 +18,7 @@
         type: Number,
         default: 0
       },
-      isCantHover: Boolean,
+      isCantActive: Boolean,
       squareNumber: Number,
       eventClickNumber: Number,
       soundDelay: Number
@@ -30,10 +30,12 @@
     },
     methods: {
       clickHandler() {
-        this.stopClick()
-        this.soundPlay()
-        setTimeout(this.stopClick, this.soundDelay)
-        this.$emit('playerClick', this.squareNumber)
+        if(!this.isCantActive) {
+          this.stopClick()
+          this.soundPlay()
+          setTimeout(this.stopClick, this.soundDelay)
+          this.$emit('playerClick', this.squareNumber)
+        }
       },
       soundPlay() {
         this.$refs.audio.play()
@@ -53,13 +55,6 @@
       soundUrl () {
         return require('../assets/sound/'+this.sound+'.mp3')
       },
-      // eventClick() {
-      //   if(this.eventClickNumber === this.squareNumber) {
-      //     this.soundPlay()
-      //     setTimeout(tick, 2000)
-      //     return true
-      //   }
-      // }
     },
   }
 </script>

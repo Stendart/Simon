@@ -9,12 +9,14 @@
                   :squareNumber="index+1"
                   :eventClickNumber="eventClickNumber"
                   :soundDelay="soundDelay"
-                  :isCantHover="isLose || !isPlayerAnswer"
+                  :isCantActive="isLose || !isPlayerAnswer"
                   @playerClick="playerClick">
       </GameSquare>
     </div>
+    <div class="game__round"> <p>Номер раунда: {{roundNum}}</p>
+      <button class="game__start_btn" @click="gamePlay">Start</button>
+    </div>
 
-    <button class="game__start_btn" @click="gamePlay">Start</button>
   </div>
 </template>
 
@@ -22,17 +24,18 @@
 import GameSquare from '../components/GameSquare';
 
 export default {
-  name: 'Home',
+  name: 'Game',
   data() {
     return {
       numRound: 1,
-      roundDelay: 1000,
+      roundDelay: 1500,
       arrClicks: [4, 3, 3],
 
-      // playerClicks: [],
       playerAnswerIndex: 0,
       isPlayerAnswer: false,
       isLose: false,
+
+      roundNum: 1,
 
       eventClickNumber: 0,
       squaresConfig: [
@@ -78,15 +81,13 @@ export default {
 
         const tick = () => {
           const squareValue = square.next()
-          // console.log( test.next())
-          console.log('tick', squareValue)
 
           if(!squareValue.done) {
             setTimeout(this.clearShineSquare, this.soundDelay)
             timerId = setTimeout(tick, this.roundDelay)
             this.setShineSquare(squareValue.value)
           } else {
-            console.log('ПРоверка')
+            console.log('Проверка')
             this.isPlayerAnswer = true
           }
         }
@@ -99,24 +100,22 @@ export default {
       this.gameRound()
     },
     playerClick(squareNumber) {
-      console.log('squareNumber', squareNumber)
 
       if(this.isPlayerAnswer) {
-        console.log('playerAnswerIndex', this.playerAnswerIndex)
-        console.log('this.arrClicks.length', this.arrClicks.length)
-
         if(this.playerAnswerIndex < this.arrClicks.length - 1) {
           const answer = this.arrClicks[this.playerAnswerIndex] === squareNumber
           if(!answer) {
             console.log('You lose')
+            alert('You lose')
             this.isLose = true
           }
           this.playerAnswerIndex++
-          console.log(answer)
+
         } else if (this.playerAnswerIndex === this.arrClicks.length - 1) {
           this.isPlayerAnswer = false
           this.playerAnswerIndex = 0
 
+          this.roundNum++
           this.gameRound()
         }
       }
@@ -136,12 +135,19 @@ export default {
       return this.roundDelay - 100
     }
   },
+  created() {
+    this.roundDelay = this.$store.getters.getDelay
+    console.log('this.roundDelay', this.roundDelay)
+  },
   components: {
     GameSquare
   }
 }
 </script>
 <style>
+  .home {
+    position: relative;
+  }
   .game__field {
     max-width: 400px;
     display: grid;
@@ -150,5 +156,12 @@ export default {
   .game__start_btn {
     width: 100px;
     height: 50px;
+  }
+  .game__round {
+    position: absolute;
+    top: 20%;
+    left: 60%;
+
+    font-size: 24px;
   }
 </style>
