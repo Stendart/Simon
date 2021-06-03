@@ -29,7 +29,7 @@ export default {
     return {
       numRound: 1,
       roundDelay: 1500,
-      arrClicks: [4, 3, 3],
+      arrClicks: [],
 
       playerAnswerIndex: 0,
       isPlayerAnswer: false,
@@ -100,16 +100,14 @@ export default {
       this.gameRound()
     },
     playerClick(squareNumber) {
-
       if(this.isPlayerAnswer) {
         if(this.playerAnswerIndex < this.arrClicks.length - 1) {
           const answer = this.arrClicks[this.playerAnswerIndex] === squareNumber
           if(!answer) {
-            console.log('You lose')
-            alert('You lose')
-            this.isLose = true
+            this.lose()
+          } else {
+            this.playerAnswerIndex++
           }
-          this.playerAnswerIndex++
 
         } else if (this.playerAnswerIndex === this.arrClicks.length - 1) {
           this.isPlayerAnswer = false
@@ -121,13 +119,18 @@ export default {
       }
     },
     getNextSquare: function* () {
-      // let index = 0;
-      // while(index <= 2) // при достижении 2, done в yield станет true, а value undefined;
-      //   yield index++;
-
       for(let i = 0; i < this.arrClicks.length; i++) {
         yield this.arrClicks[i]
       }
+    },
+    lose() {
+      console.log('You lose')
+      alert('You lose')
+      this.isLose = true
+      this.arrClicks = []
+      this.roundNum = 1
+      this.playerAnswerIndex = 0
+      this.isPlayerAnswer = false
     }
   },
   computed: {
@@ -137,16 +140,20 @@ export default {
   },
   created() {
     this.roundDelay = this.$store.getters.getDelay
-    console.log('this.roundDelay', this.roundDelay)
   },
   components: {
     GameSquare
   }
 }
 </script>
-<style>
+<style lang="scss">
   .home {
-    position: relative;
+    display: flex;
+    justify-content: space-around;
+
+    @media (max-width: 720px) {
+      flex-direction: column;
+    }
   }
   .game__field {
     max-width: 400px;
@@ -158,10 +165,6 @@ export default {
     height: 50px;
   }
   .game__round {
-    position: absolute;
-    top: 20%;
-    left: 60%;
-
     font-size: 24px;
   }
 </style>
