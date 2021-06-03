@@ -8,11 +8,13 @@
                   :sound="square.sound"
                   :squareNumber="index+1"
                   :eventClickNumber="eventClickNumber"
-                  :soundDelay="soundDelay">
+                  :soundDelay="soundDelay"
+                  :isCantHover="isLose || !isPlayerAnswer"
+                  @playerClick="playerClick">
       </GameSquare>
     </div>
 
-    <button class="game__start_btn" @click="gameRound">Start</button>
+    <button class="game__start_btn" @click="gamePlay">Start</button>
   </div>
 </template>
 
@@ -24,14 +26,20 @@ export default {
   data() {
     return {
       numRound: 1,
-      soundDelay: 1000,
-      arrClicks: [],
+      roundDelay: 1000,
+      arrClicks: [4, 3, 3],
+
+      // playerClicks: [],
+      playerAnswerIndex: 0,
+      isPlayerAnswer: false,
+      isLose: false,
+
       eventClickNumber: 0,
       squaresConfig: [
         {
           color: '#FF5643',
           rotate: 0,
-          sound: '1' //'../assets/sound/1.mp3'
+          sound: '1'
         },
         {
           color: '#1e90ff',
@@ -57,28 +65,61 @@ export default {
       const numPart = Math.round(randomNum)
       this.arrClicks.push(numPart)
     },
-    playRound(square) {
+    setShineSquare(square) {
       this.eventClickNumber = square
     },
-    interval(del) {
-
+    clearShineSquare() {
+      this.eventClickNumber = 0
     },
     gameRound() {
-      this.generateClick()
-      const square = this.getNextSquare()
+      if(!this.isLose) {
+        this.generateClick()
+        const square = this.getNextSquare()
 
-      const tick = () => {
-        const squareValue = square.next()
-        // console.log( test.next())
-        console.log('tick', squareValue)
+        const tick = () => {
+          const squareValue = square.next()
+          // console.log( test.next())
+          console.log('tick', squareValue)
 
-        if(!squareValue.done) {
-          timerId = setTimeout(tick, 2000)
-          this.playRound(squareValue.value)
+          if(!squareValue.done) {
+            setTimeout(this.clearShineSquare, this.soundDelay)
+            timerId = setTimeout(tick, this.roundDelay)
+            this.setShineSquare(squareValue.value)
+          } else {
+            console.log('ПРоверка')
+            this.isPlayerAnswer = true
+          }
+        }
+
+        let timerId = setTimeout(tick, this.roundDelay)
+      }
+    },
+    gamePlay() {
+      this.isLose = false
+      this.gameRound()
+    },
+    playerClick(squareNumber) {
+      console.log('squareNumber', squareNumber)
+
+      if(this.isPlayerAnswer) {
+        console.log('playerAnswerIndex', this.playerAnswerIndex)
+        console.log('this.arrClicks.length', this.arrClicks.length)
+
+        if(this.playerAnswerIndex < this.arrClicks.length - 1) {
+          const answer = this.arrClicks[this.playerAnswerIndex] === squareNumber
+          if(!answer) {
+            console.log('You lose')
+            this.isLose = true
+          }
+          this.playerAnswerIndex++
+          console.log(answer)
+        } else if (this.playerAnswerIndex === this.arrClicks.length - 1) {
+          this.isPlayerAnswer = false
+          this.playerAnswerIndex = 0
+
+          this.gameRound()
         }
       }
-
-      let timerId = setTimeout( tick, 2000)
     },
     getNextSquare: function* () {
       // let index = 0;
@@ -88,6 +129,11 @@ export default {
       for(let i = 0; i < this.arrClicks.length; i++) {
         yield this.arrClicks[i]
       }
+    }
+  },
+  computed: {
+    soundDelay() {
+      return this.roundDelay - 100
     }
   },
   components: {

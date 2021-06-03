@@ -1,5 +1,6 @@
 <template>
-    <div class="square" :class="{'square-active' : eventClick() }"
+    <div class="square " :aria-disabled="true"
+         :class="{'square-active': eventClick(), 'no-hover': isCantHover}"
          :style="{backgroundColor: color, transform: 'rotate(' + rotation + 'deg)'}"
          @click="clickHandler"
     >
@@ -17,6 +18,7 @@
         type: Number,
         default: 0
       },
+      isCantHover: Boolean,
       squareNumber: Number,
       eventClickNumber: Number,
       soundDelay: Number
@@ -28,8 +30,10 @@
     },
     methods: {
       clickHandler() {
+        this.stopClick()
         this.soundPlay()
         setTimeout(this.stopClick, this.soundDelay)
+        this.$emit('playerClick', this.squareNumber)
       },
       soundPlay() {
         this.$refs.audio.play()
@@ -69,7 +73,7 @@
 
     opacity: .6;
 
-    &:hover {
+    &:hover:not(.no-hover) {
         border: 2px solid black;
         opacity: 1;
     }
