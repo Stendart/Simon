@@ -1,5 +1,5 @@
 <template>
-    <div class="square" :class="{'square-active' : eventClick }"
+    <div class="square" :class="{'square-active' : eventClick() }"
          :style="{backgroundColor: color, transform: 'rotate(' + rotation + 'deg)'}"
          @click="clickHandler"
     >
@@ -18,7 +18,8 @@
         default: 0
       },
       squareNumber: Number,
-      eventClickNumber: Number
+      eventClickNumber: Number,
+      soundDelay: Number
     },
 
     data() {
@@ -28,21 +29,33 @@
     methods: {
       clickHandler() {
         this.soundPlay()
+        setTimeout(this.stopClick, this.soundDelay)
       },
       soundPlay() {
         this.$refs.audio.play()
+      },
+      stopClick() {
+        this.$refs.audio.load()
+      },
+      eventClick() {
+        if(this.eventClickNumber === this.squareNumber) {
+          this.soundPlay()
+          setTimeout(this.stopClick, this.soundDelay)
+          return true
+        }
       }
     },
     computed: {
       soundUrl () {
         return require('../assets/sound/'+this.sound+'.mp3')
       },
-      eventClick() {
-        if(this.eventClickNumber === this.squareNumber) {
-          this.soundPlay()
-          return true
-        }
-      }
+      // eventClick() {
+      //   if(this.eventClickNumber === this.squareNumber) {
+      //     this.soundPlay()
+      //     setTimeout(tick, 2000)
+      //     return true
+      //   }
+      // }
     },
   }
 </script>
@@ -54,7 +67,7 @@
     border: 2px solid white;
     border-radius: 50% 0 0 0;
 
-    opacity: .8;
+    opacity: .6;
 
     &:hover {
         border: 2px solid black;

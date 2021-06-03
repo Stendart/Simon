@@ -7,11 +7,12 @@
                   :rotation="square.rotate"
                   :sound="square.sound"
                   :squareNumber="index+1"
-                  :eventClickNumber="eventClickNumber">
+                  :eventClickNumber="eventClickNumber"
+                  :soundDelay="soundDelay">
       </GameSquare>
     </div>
 
-    <button class="game__start_btn" @click="startPlay">Start</button>
+    <button class="game__start_btn" @click="gameRound">Start</button>
   </div>
 </template>
 
@@ -23,6 +24,7 @@ export default {
   data() {
     return {
       numRound: 1,
+      soundDelay: 1000,
       arrClicks: [],
       eventClickNumber: 0,
       squaresConfig: [
@@ -51,10 +53,6 @@ export default {
   },
   methods: {
     generateClick() {
-      // for(let i = 0; i < this.num; i++) {
-      //   const numPart = Math.random() * (4 - 1) + 1
-      //
-      // }
       const randomNum = Math.random() * (4 - 1) + 1
       const numPart = Math.round(randomNum)
       this.arrClicks.push(numPart)
@@ -63,19 +61,9 @@ export default {
       this.eventClickNumber = square
     },
     interval(del) {
-      const squareValue = square.next()
-      // console.log( test.next())
-      console.log('tick', squareValue)
-      console.log('value', squareValue.value)
-      console.log('this', this)
 
-      if(!squareValue.done) {
-        timerId = setTimeout(tick, 2000)
-        this.playRound(squareValue.value)
-      }
-      // this.playRound()
     },
-    startPlay() {
+    gameRound() {
       this.generateClick()
       const square = this.getNextSquare()
 
@@ -83,32 +71,14 @@ export default {
         const squareValue = square.next()
         // console.log( test.next())
         console.log('tick', squareValue)
-        console.log('value', squareValue.value)
-        console.log('this', this)
 
         if(!squareValue.done) {
           timerId = setTimeout(tick, 2000)
           this.playRound(squareValue.value)
         }
-        // this.playRound()
       }
 
-
-      let timerId = setTimeout( tick, 2000)//function tick() {
-
-        // const squareValue = square.next()
-        // // console.log( test.next())
-        // console.log('tick', squareValue)
-        // console.log('value', squareValue.value)
-        // console.log('this', this)
-        //
-        // if(!squareValue.done) {
-        //   timerId = setTimeout(tick, 2000)
-        //   this.playRound(squareValue.value)
-        // }
-        // // this.playRound()
-
-      //}, 2000);
+      let timerId = setTimeout( tick, 2000)
     },
     getNextSquare: function* () {
       // let index = 0;
