@@ -1,5 +1,5 @@
 <template>
-    <div class="square" :class="{'square-active' : rotation === 0}"
+    <div class="square" :class="{'square-active' : eventClick }"
          :style="{backgroundColor: color, transform: 'rotate(' + rotation + 'deg)'}"
          @click="clickHandler"
     >
@@ -16,31 +16,34 @@
       rotation: {
         type: Number,
         default: 0
-      }
+      },
+      squareNumber: Number,
+      eventClickNumber: Number
     },
+
     data() {
       return {
-        test: ''
       }
     },
     methods: {
       clickHandler() {
-        console.log(this.$refs.audio)
+        this.soundPlay()
+      },
+      soundPlay() {
         this.$refs.audio.play()
-
       }
     },
     computed: {
       soundUrl () {
-        console.log('hana')
-        return require('../assets/sound/'+this.sound+'.mp3')//require(this.sound)
-        // The path could be '../assets/img.png', etc., which depends on where your vue file is
+        return require('../assets/sound/'+this.sound+'.mp3')
+      },
+      eventClick() {
+        if(this.eventClickNumber === this.squareNumber) {
+          this.soundPlay()
+          return true
+        }
       }
     },
-    // mounted() {
-    //   console.log('sound =', this.sound)
-    //   this.test = require(this.sound) //'../assets/sound/1.mp3'
-    // }
   }
 </script>
 
